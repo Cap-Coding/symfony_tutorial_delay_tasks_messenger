@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:12.4-alpine
+    restart: on-failure
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: sf_user
+      POSTGRES_PASSWORD: random_password
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - db-data:/var/lib/postgresql/data:rw
+    ports:
+      - "5432:5432"
+
+  php:
+    build:
+      context: .
+      target: app_php
+    image: sf-docker/php:dev
+    restart: on-failure
+    depends_on:
+      - message_transport
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: 1
+      PHP_DATE_TIMEZONE: ${PHP_DATE_TIMEZONE:-UTC}
+      XDEBUG_CONFIG: remote_host=docker.for.mac.localhost
+      PHP_IDE_CONFIG: serverName=localhost
+    volumes:
+      - .:/app:rw,cached
+
+  nginx:
+    build:
+      context: .
+      target: app_nginx
+    image: sf-docker/nginx:dev
+    restart: on-failure
+    depends_on:
+      - php
+    volumes:
+      - ./public:/app/public:ro
+    ports:
+      - "8080:80"
+
+  message_transport:
+    image: redis:6.2-alpine
+    restart: on-failure
+    volumes:
+      - redis-data:/data
+
+    ports:
+      - "6379:6379"
+
+volumes:
+  db-data:
+  redis-data:
