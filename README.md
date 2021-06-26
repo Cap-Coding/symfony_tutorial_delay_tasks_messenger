@@ -1,6 +1,6 @@
-# Speed up response by delaying heavy tasks
+# Delay "heavy" tasks in Symfony with component Messenger
 
-Watch full tutorial [here](https://youtu.be/)
+Watch full tutorial [here](https://youtu.be/UHlA5nHdCmw)
 
 ## Launch project
 
@@ -9,12 +9,8 @@ Run in terminal `make up`
 ### Sample API request:
 
 ```
-curl --location --request POST 'http://localhost:8080/api/v1/reservations' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "name": "some reservation",
-    "price": 200
-}'
+curl --location --request GET 'http://localhost:8080/api/v1/reservations/1' \
+--header 'Content-Type: application/json'
 ```
 
 ## Run worker
@@ -24,6 +20,10 @@ docker-compose exec php bin/console messenger:consume async -vv
 ```
 
 # Other video tutorials
+
+## Delay "heavy" tasks in Symfony with event kernel.terminate
+
+There is a [video](https://youtu.be/HrQme9KUlUg)
 
 ## Design pattern "Chain of responsibility" (Symfony implementation)
 
